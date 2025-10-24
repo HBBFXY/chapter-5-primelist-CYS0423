@@ -4,25 +4,19 @@ def PrimeList(N):
     参数:    N - 正整数    
     返回:    str - 包含所有小于 N 的质数的字符串，空格分隔
     """
-    primes = []
-    # 遍历从2到N-1的所有数（质数必须大于1）
-    for num in range(2, N):
-        # 2是唯一的偶数质数，单独处理
-        if num == 2:
-            primes.append(str(num))
-            continue
-        # 排除所有偶数（除2外，偶数不可能是质数）
-        if num % 2 == 0:
-            continue
-        # 检查奇数是否为质数：只需验证到sqrt(num)
-        is_prime = True
-        sqrt_num = int(num **0.5) + 1  # +1确保覆盖平方根整数部分
-        # 只检查奇数除数（步长为2）
-        for i in range(3, sqrt_num, 2):
-            if num % i == 0:
-                is_prime = False
-                break
-        if is_prime:
-            primes.append(str(num))
-    # 用空格连接所有质数字符串，空列表会返回空字符串
+    if N <= 2:
+        return ""  # 小于2的数没有质数
+    
+    # 初始化筛子：sieve[i]表示i是否为质数（初始假设都是质数）
+    sieve = [True] * N
+    sieve[0], sieve[1] = False, False  # 0和1不是质数
+    
+    # 筛选过程：从2开始，将其倍数标记为非质数
+    for current in range(2, int(N ** 0.5) + 1):
+        if sieve[current]:  # 如果current是质数，标记其倍数
+            # 从current*current开始标记（更小的倍数已被之前的数标记过）
+            sieve[current*current : N : current] = [False] * len(sieve[current*current : N : current])
+    
+    # 收集所有质数，转换为字符串后用空格连接
+    primes = [str(i) for i, is_prime in enumerate(sieve) if is_prime]
     return ' '.join(primes)
